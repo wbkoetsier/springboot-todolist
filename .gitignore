@@ -1,3 +1,11 @@
+## IDEA
+*.iml
+.idea/
+
+## Maven
+log/
+target/
+
 ## https://github.com/github/gitignore/blob/master/Java.gitignore
 # Compiled class file
 *.class
