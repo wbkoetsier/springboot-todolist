@@ -2,12 +2,14 @@ package nl.wilkoetsier.todolist.controller;
 
 import nl.wilkoetsier.todolist.model.TodoItem;
 import nl.wilkoetsier.todolist.model.TodoItemRepository;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -24,8 +26,18 @@ public class TodoItemController {
     // Aggregate root
     // tag::get-aggregate-root[]
     @GetMapping("/todoitems")
-    List<TodoItem> all() {
-        return repository.findAll();
+    CollectionModel<EntityModel<TodoItem>> all() {
+        List<EntityModel<TodoItem>> todoItems = repository.findAll().stream()
+                                                          .map(todoItem -> EntityModel.of(todoItem,
+                                                                  linkTo(methodOn(TodoItemController.class)
+                                                                          .one(todoItem.getId()))
+                                                                          .withSelfRel(),
+                                                                  linkTo(methodOn(TodoItemController.class)
+                                                                          .all())
+                                                                          .withRel("todoItems")))
+                                                          .collect(Collectors.toList());
+        return CollectionModel.of(todoItems,
+                linkTo(methodOn(TodoItemController.class).all()).withSelfRel());
     }
     // end::get-aggregate-root[]
 
