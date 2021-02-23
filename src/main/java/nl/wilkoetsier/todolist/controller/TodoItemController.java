@@ -1,6 +1,7 @@
 package nl.wilkoetsier.todolist.controller;
 
 import nl.wilkoetsier.todolist.model.TodoItem;
+import nl.wilkoetsier.todolist.model.TodoItemModelAssembler;
 import nl.wilkoetsier.todolist.model.TodoItemRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -18,23 +19,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class TodoItemController {
 
     private final TodoItemRepository repository;
+    private final TodoItemModelAssembler assembler;
 
-    public TodoItemController(TodoItemRepository repository) {
+    public TodoItemController(TodoItemRepository repository, TodoItemModelAssembler assembler) {
         this.repository = repository;
+        this.assembler = assembler;
     }
 
     // Aggregate root
     // tag::get-aggregate-root[]
     @GetMapping("/todoitems")
-    CollectionModel<EntityModel<TodoItem>> all() {
+    public CollectionModel<EntityModel<TodoItem>> all() {
         List<EntityModel<TodoItem>> todoItems = repository.findAll().stream()
-                                                          .map(todoItem -> EntityModel.of(todoItem,
-                                                                  linkTo(methodOn(TodoItemController.class)
-                                                                          .one(todoItem.getId()))
-                                                                          .withSelfRel(),
-                                                                  linkTo(methodOn(TodoItemController.class)
-                                                                          .all())
-                                                                          .withRel("todoItems")))
+                                                          .map(assembler::toModel)
                                                           .collect(Collectors.toList());
         return CollectionModel.of(todoItems,
                 linkTo(methodOn(TodoItemController.class).all()).withSelfRel());
@@ -49,12 +46,10 @@ public class TodoItemController {
     // Single item
 
     @GetMapping("/todoitems/{id}")
-    EntityModel<TodoItem> one(@PathVariable UUID id) {
+    public EntityModel<TodoItem> one(@PathVariable UUID id) {
         TodoItem todoItem = repository.findById(id)
                                       .orElseThrow(() -> new TodoItemNotFoundException(id));
-        return EntityModel.of(todoItem,
-                linkTo(methodOn(TodoItemController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(TodoItemController.class).all()).withRel("todoItems"));
+        return assembler.toModel(todoItem);
     }
 
     @PutMapping("/todoitems/{id}")
