@@ -2,11 +2,15 @@ package nl.wilkoetsier.todolist.controller;
 
 import nl.wilkoetsier.todolist.model.TodoItem;
 import nl.wilkoetsier.todolist.model.TodoItemRepository;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class TodoItemController {
@@ -33,10 +37,12 @@ public class TodoItemController {
     // Single item
 
     @GetMapping("/todoitems/{id}")
-    TodoItem one(@PathVariable UUID id) {
-
-        return repository.findById(id)
-                         .orElseThrow(() -> new TodoItemNotFoundException(id));
+    EntityModel<TodoItem> one(@PathVariable UUID id) {
+        TodoItem todoItem = repository.findById(id)
+                                      .orElseThrow(() -> new TodoItemNotFoundException(id));
+        return EntityModel.of(todoItem,
+                linkTo(methodOn(TodoItemController.class).one(id)).withSelfRel(),
+                linkTo(methodOn(TodoItemController.class).all()).withRel("todoItems"));
     }
 
     @PutMapping("/todoitems/{id}")
