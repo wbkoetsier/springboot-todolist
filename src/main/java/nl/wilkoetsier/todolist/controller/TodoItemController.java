@@ -5,6 +5,8 @@ import nl.wilkoetsier.todolist.model.TodoItemModelAssembler;
 import nl.wilkoetsier.todolist.model.TodoItemRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -39,8 +41,11 @@ public class TodoItemController {
     // end::get-aggregate-root[]
 
     @PostMapping("/todoitems")
-    TodoItem newTodoItem(@RequestBody TodoItem newTodoItem) {
-        return repository.save(newTodoItem);
+    ResponseEntity<?> newTodoItem(@RequestBody TodoItem newTodoItem) {
+        EntityModel<TodoItem> entityModel = assembler.toModel(repository.save(newTodoItem));
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     // Single item
