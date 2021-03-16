@@ -78,7 +78,8 @@ public class TodoItemController {
     }
 
     @DeleteMapping("/todoitems/{id}")
-    void deleteEmployee(@PathVariable UUID id) {
+    ResponseEntity<?> deleteEmployee(@PathVariable UUID id) {
         repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
