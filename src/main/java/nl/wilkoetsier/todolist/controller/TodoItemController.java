@@ -58,19 +58,23 @@ public class TodoItemController {
     }
 
     @PutMapping("/todoitems/{id}")
-    TodoItem replaceTodoItem(@RequestBody TodoItem newTodoItem, @PathVariable UUID id) {
+    ResponseEntity<?> replaceTodoItem(@RequestBody TodoItem newTodoItem, @PathVariable UUID id) {
 
-        return repository.findById(id)
-                         .map(todoItem -> {
-                             todoItem.setTodoValue(newTodoItem.getTodoValue());
-                             todoItem.setMarkedAsDone(newTodoItem.isMarkedAsDone());
-                             todoItem.setDateTimeUpdated(Instant.now().toEpochMilli());
-                             return repository.save(todoItem);
-                         })
-                         .orElseGet(() -> {
-                             newTodoItem.setId(id);
-                             return repository.save(newTodoItem);
-                         });
+        TodoItem updatedTodoItem = repository.findById(id)
+                                       .map(todoItem -> {
+                                           todoItem.setTodoValue(newTodoItem.getTodoValue());
+                                           todoItem.setMarkedAsDone(newTodoItem.isMarkedAsDone());
+                                           todoItem.setDateTimeUpdated(Instant.now().toEpochMilli());
+                                           return repository.save(todoItem);
+                                       })
+                                       .orElseGet(() -> {
+                                           newTodoItem.setId(id);
+                                           return repository.save(newTodoItem);
+                                       });
+        EntityModel<TodoItem> entityModel = assembler.toModel(updatedTodoItem);
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     @DeleteMapping("/todoitems/{id}")
