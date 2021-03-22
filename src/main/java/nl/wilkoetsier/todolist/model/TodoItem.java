@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 @Entity
@@ -71,6 +72,17 @@ public class TodoItem {
 
     public void setMarkedAsDone(boolean markedAsDone) {
         this.markedAsDone = markedAsDone;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TodoItem.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("dateTimeCreated=" + dateTimeCreated)
+                .add("todoValue='" + todoValue + "'")
+                .add("dateTimeUpdated=" + dateTimeUpdated)
+                .add("markedAsDone=" + markedAsDone)
+                .toString();
     }
 
     @Override
