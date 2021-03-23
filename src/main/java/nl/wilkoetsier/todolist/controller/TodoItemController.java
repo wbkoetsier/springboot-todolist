@@ -61,16 +61,16 @@ public class TodoItemController {
     ResponseEntity<?> replaceTodoItem(@RequestBody TodoItem newTodoItem, @PathVariable UUID id) {
 
         TodoItem updatedTodoItem = repository.findById(id)
-                                       .map(todoItem -> {
-                                           todoItem.setTodoValue(newTodoItem.getTodoValue());
-                                           todoItem.setMarkedAsDone(newTodoItem.isMarkedAsDone());
-                                           todoItem.setDateTimeUpdated(Instant.now().toEpochMilli());
-                                           return repository.save(todoItem);
-                                       })
-                                       .orElseGet(() -> {
-                                           newTodoItem.setId(id);
-                                           return repository.save(newTodoItem);
-                                       });
+                                             .map(todoItem -> {
+                                                 todoItem.setTodoValue(newTodoItem.getTodoValue());
+                                                 todoItem.setStatus(newTodoItem.getStatus());
+                                                 todoItem.setDateTimeUpdated(Instant.now().toEpochMilli());
+                                                 return repository.save(todoItem);
+                                             })
+                                             .orElseGet(() -> {
+                                                 newTodoItem.setId(id);
+                                                 return repository.save(newTodoItem);
+                                             });
         EntityModel<TodoItem> entityModel = assembler.toModel(updatedTodoItem);
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

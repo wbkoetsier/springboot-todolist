@@ -19,19 +19,19 @@ public class TodoItem {
     protected long dateTimeCreated;
     private String todoValue;
     private long dateTimeUpdated;
-    private boolean markedAsDone;
+    private Status status;
 
     public TodoItem() {
     }
 
     public TodoItem(String todoValue) {
-        this(todoValue, false);
+        this(todoValue, Status.TODO);
     }
 
-    public TodoItem(String todoValue, boolean markedAsDone) {
+    public TodoItem(String todoValue, Status status) {
         this.todoValue = todoValue;
         this.dateTimeCreated = NOW;
-        this.markedAsDone = markedAsDone;
+        this.status = status;
     }
 
     public UUID getId() {
@@ -66,12 +66,12 @@ public class TodoItem {
         this.dateTimeUpdated = dateTimeUpdated;
     }
 
-    public boolean isMarkedAsDone() {
-        return markedAsDone;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setMarkedAsDone(boolean markedAsDone) {
-        this.markedAsDone = markedAsDone;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class TodoItem {
                 .add("dateTimeCreated=" + dateTimeCreated)
                 .add("todoValue='" + todoValue + "'")
                 .add("dateTimeUpdated=" + dateTimeUpdated)
-                .add("markedAsDone=" + markedAsDone)
+                .add("status=" + status)
                 .toString();
     }
 
@@ -91,12 +91,12 @@ public class TodoItem {
         if (o == null || getClass() != o.getClass()) return false;
         TodoItem todoItem = (TodoItem) o;
         return getDateTimeCreated() == todoItem.getDateTimeCreated() &&
-               getDateTimeUpdated() == todoItem.getDateTimeUpdated() && isMarkedAsDone() == todoItem.isMarkedAsDone() &&
-               getId().equals(todoItem.getId()) && getTodoValue().equals(todoItem.getTodoValue());
+               getDateTimeUpdated() == todoItem.getDateTimeUpdated() && getId().equals(todoItem.getId()) &&
+               Objects.equals(getTodoValue(), todoItem.getTodoValue()) && getStatus() == todoItem.getStatus();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTodoValue(), getDateTimeCreated(), getDateTimeUpdated(), isMarkedAsDone());
+        return Objects.hash(getId(), getDateTimeCreated(), getTodoValue(), getDateTimeUpdated(), getStatus());
     }
 }

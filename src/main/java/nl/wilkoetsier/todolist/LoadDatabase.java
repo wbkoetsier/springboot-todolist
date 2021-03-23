@@ -15,7 +15,7 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(TodoItemRepository todoItemRepository, PersonRepository personRepository) {
         return args -> {
-            LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koffie zetten", true)));
+            LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koffie zetten", Status.COMPLETED)));
             LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koffie opdrinken")));
             LOG.info("Preloading {}", personRepository.save(new Person("Shiloh", "Renaissance")));
             LOG.info("Preloading {}", personRepository.save(new Person("Bobby", "Of Colourful White")));
