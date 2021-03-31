@@ -17,6 +17,7 @@ public class LoadDatabase {
         return args -> {
             LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koffie zetten", Status.COMPLETED)));
             LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koffie opdrinken")));
+            LOG.info("Preloading {}", todoItemRepository.save(new TodoItem("Koekje er bij", Status.IN_PROGRESS)));
             LOG.info("Preloading {}", personRepository.save(new Person("Shiloh", "Renaissance")));
             LOG.info("Preloading {}", personRepository.save(new Person("Bobby", "Of Colourful White")));
         };

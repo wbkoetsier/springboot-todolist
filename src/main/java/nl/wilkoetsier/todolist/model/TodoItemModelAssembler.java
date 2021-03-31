@@ -13,9 +13,30 @@ public class TodoItemModelAssembler implements RepresentationModelAssembler<Todo
 
     @Override
     public EntityModel<TodoItem> toModel(TodoItem todoItem) {
-        return EntityModel.of(todoItem,
+        EntityModel<TodoItem> todoItemModel = EntityModel.of(todoItem,
                 linkTo(methodOn(TodoItemController.class).one(todoItem.getId())).withSelfRel(),
                 linkTo(methodOn(TodoItemController.class).all()).withRel("todoItems"));
+
+        if (todoItem.getStatus() == Status.TODO) {
+            todoItemModel.add(
+                    linkTo(methodOn(TodoItemController.class)
+                            .inProgress(todoItem.getId()))
+                            .withRel("inProgress"));
+            todoItemModel.add(
+                    linkTo(methodOn(TodoItemController.class)
+                            .complete(todoItem.getId()))
+                            .withRel("complete"));
+        } else if (todoItem.getStatus() == Status.IN_PROGRESS) {
+            todoItemModel.add(
+                    linkTo(methodOn(TodoItemController.class)
+                            .todo(todoItem.getId()))
+                            .withRel("todo"));
+            todoItemModel.add(
+                    linkTo(methodOn(TodoItemController.class)
+                            .complete(todoItem.getId()))
+                            .withRel("complete"));
+        }
+        return todoItemModel;
     }
 
 }
